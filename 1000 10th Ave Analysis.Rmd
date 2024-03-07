@@ -416,54 +416,16 @@ resource_types <- clarity_ser_tbl %>%
   dplyr::select(PROV_ID, PROV_NAME, PROV_TYPE, CLINICIAN_TITLE) %>%
   collect()
 
-
-MSW_data <- utilization_tbl %>%
-  filter(UTIL_TYPE == "scheduled") %>%
-  filter(VISIT_METHOD == "IN PERSON") %>%
-  filter(DEPARTMENT %like% "%1000 10TH%") %>%
-  collect()
-
-MSM_data <- utilization_tbl %>%
-  filter(UTIL_TYPE == "scheduled") %>%
-  filter(VISIT_METHOD == "IN PERSON") %>%
-  filter(DEPARTMENT %like% "%440 W 114%") %>%
-  collect()
-
-MSM_MSW_data_combined <- bind_rows(MSW_data, MSM_data)
-require(openxlsx)
-write.xlsx(MSM_MSW_data_combined, "MSM_MSW_data_combined.xlsx")
-
-
-
-
 # Utilization Data Pull --------------------------------------------------------
 util_data <- utilization_tbl %>%
   filter(UTIL_TYPE == "scheduled") %>%
   filter(VISIT_METHOD == "IN PERSON") %>%
-  # filter(DEPARTMENT %like% "1090 AMST AVE UROLOGY%") %>%
-  filter(DEPARTMENT %in% c("440 W 114 ST ACC1 SUITE 100 SURGICAL ONCOLOGY",
-                           "440 W 114 ST ACC6 SURGICAL ONCOLOGY",
-                           "440 W 114 SURG BARIATRIC",
-                           "440 W 114 SURG COLORECTAL",
-                           "440 W 114 SURG GENERAL",
-                           "440 W 114 SURG PLASTIC",
-                           "440 W 114 SURG VASC",
-                           "440 W 114TH ST RMTI LIVER DISEASE",
-                           "1090 AMST AVE UROLOGY")) %>%
+  filter(DEPARTMENT %like% "1000 10TH%") %>%
   collect()
 
 access_data <- access_raw_tbl %>%
   filter(VISIT_METHOD == "IN PERSON") %>%
-  # filter(DEPARTMENT_NAME %like% "1090 AMST AVE UROLOGY%") %>%
-  filter(DEPARTMENT_NAME %in% c("440 W 114 ST ACC1 SUITE 100 SURGICAL ONCOLOGY",
-                           "440 W 114 ST ACC6 SURGICAL ONCOLOGY",
-                           "440 W 114 SURG BARIATRIC",
-                           "440 W 114 SURG COLORECTAL",
-                           "440 W 114 SURG GENERAL",
-                           "440 W 114 SURG PLASTIC",
-                           "440 W 114 SURG VASC",
-                           "440 W 114TH ST RMTI LIVER DISEASE",
-                           "1090 AMST AVE UROLOGY")) %>%
+  filter(DEPARTMENT_NAME %like% "1000 10TH%") %>%
   dplyr::select(PAT_ENC_CSN_ID, VISIT_TYPE, PRC_NAME) %>%
   mutate(PAT_ENC_CSN_ID = as.character(PAT_ENC_CSN_ID)) %>%
   collect()
@@ -471,9 +433,6 @@ access_data <- access_raw_tbl %>%
 
 util_data <- left_join(util_data, access_data)
   
-# check <- util_data %>%
-#   group_by(DEPARTMENT_OLD, DEP_RPT_GRP_ELEVEN) %>%
-#   summarise(total = n())
 
 depts <- util_data %>%
   group_by(DEPARTMENT_OLD, VISIT_METHOD) %>%
@@ -487,35 +446,18 @@ depts <- util_data %>%
 
 total_volume <- utilization_tbl %>%
   filter(UTIL_TYPE == "scheduled") %>%
-  # filter(DEPARTMENT %like% "%1090 AMST AVE UROLOGY%") %>%
-  filter(DEPARTMENT %in% c("440 W 114 ST ACC1 SUITE 100 SURGICAL ONCOLOGY",
-                           "440 W 114 ST ACC6 SURGICAL ONCOLOGY",
-                           "440 W 114 SURG BARIATRIC",
-                           "440 W 114 SURG COLORECTAL",
-                           "440 W 114 SURG GENERAL",
-                           "440 W 114 SURG PLASTIC",
-                           "440 W 114 SURG VASC",
-                           "440 W 114TH ST RMTI LIVER DISEASE")) %>%
+  filter(DEPARTMENT %like% "1000 10TH%") %>%
   mutate(APPT_MONTH = month(APPT_DATE_YEAR)) %>%
-  filter(APPT_MONTH < 11) %>%
+  # filter(APPT_MONTH < 11) %>%
   group_by(APPT_YEAR) %>%
   summarise(total = n()) %>%
   collect() 
 
 total_avg_visits_day <- utilization_tbl %>%
   filter(UTIL_TYPE == "scheduled") %>%
-  # filter(DEPARTMENT %like% "%1090 AMST AVE UROLOGY%") %>%
-  filter(DEPARTMENT %in% c("440 W 114 ST ACC1 SUITE 100 SURGICAL ONCOLOGY",
-                           "440 W 114 ST ACC6 SURGICAL ONCOLOGY",
-                           "440 W 114 SURG BARIATRIC",
-                           "440 W 114 SURG COLORECTAL",
-                           "440 W 114 SURG GENERAL",
-                           "440 W 114 SURG PLASTIC",
-                           "440 W 114 SURG VASC",
-                           "440 W 114TH ST RMTI LIVER DISEASE",
-                           "1090 AMST AVE UROLOGY")) %>%
+  filter(DEPARTMENT %like% "1000 10TH%") %>%
   mutate(APPT_MONTH = month(APPT_DATE_YEAR)) %>%
-  filter(APPT_MONTH < 11) %>%
+  # filter(APPT_MONTH < 11) %>%
   group_by(APPT_YEAR, APPT_DATE_YEAR) %>%
   summarise(total = n()) %>%
   group_by(APPT_YEAR) %>%
@@ -541,41 +483,6 @@ dept_visits_types <- util_data %>%
 
 ```{r Space Committee Assessment Criteria, echo = FALSE, warning = FALSE, message = FALSE}
 ####### Analysis Criteria ########
-# 5 E 98th St --------------------
-visits_exclude <- "FLUROSCOPY|FLUOROSCOPIC|ULTRASOUND|INFUSION|PHOTOTHERAPY"
-visit_types_exclude <- "NA"
-depts_exclude <- "NA"
-total_rooms <- 272 # Including 265 exam + 7 procedure 
-
-
-# 234 85th St --------------------
-visits_exclude <- "AUDIO TEST"
-visit_types_exclude <- c("")
-depts_exclude <- c("234 E 85TH CARD ENDO","234 E 85TH CARD REHAB","234 E 85TH CARDIOLOGY") # Moved out in Q1 2023
-total_rooms <- 85 # Including 75 exam + 10 procedure
-
-
-# 440 W 114th St --------------------
-visits_exclude <- "VISUAL FIELD|FLUORESCEIN|LASER|INFUSION|TRANSFUSION|PORT FLUSH|PHLEBOTOMY|PUMP|FLUSH"
-visit_types_exclude <- "TREATMENT VISIT"
-depts_exclude <- c(
-  # "440 W 114 CARDIO REMOTE DEVICE",
-                    "440 W 114 IAM",
-                    "440 W 114 INFUSION",
-                    "440 W 114 INFUSION CENTER",
-                    "440 W 114 LAB CLINIC",
-                    "440 W 114TH IAM DENTAL")
-total_rooms <- 85 # Including 110 exam + 1 procedure
-
-
-
-# 340 E 17th St Family Planning --------
-visits_exclude <- c("")
-# visit_types_exclude <- "TREATMENT VISIT"
-depts_exclude <- c("")
-total_rooms <- 3 # Including 110 exam + 1 procedure
-
-
 # 1000 10th Ave -----------------------
 visits_exclude <- "VISUAL FIELD|FLUORESCEIN|LASER|INFUSION|TRANSFUSION|PORT FLUSH|PHLEBOTOMY|PUMP|FLUSH"
 visit_types_exclude <- "TREATMENT VISIT"
@@ -592,39 +499,20 @@ depts_exclude <- c("1000 10TH FETAL EVAL CLINIC", # Uses separate Sono and NST R
                    "1000 10TH CITPD",
                    "1000 10TH PFT LAB",
                    "1000 10TH AVE PSYCHIATRY")
-total_rooms <- 58 # Including 51 exam + 1 isolation
-
-
-# Consolidating 1090 Amst Ave Urology and 440 W 114th St. Surgery
-visits_exclude <- "VISUAL FIELD|FLUORESCEIN|LASER|INFUSION|TRANSFUSION|PORT FLUSH|PHLEBOTOMY|PUMP|FLUSH"
-visit_types_exclude <- "TREATMENT VISIT"
-depts_include <- c("1090 AMST AVE UROLOGY",
-                   "440 W 114 ST ACC1 SUITE 100 SURGICAL ONCOLOGY",
-                   "440 W 114 ST ACC6 SURGICAL ONCOLOGY",
-                   "440 W 114 SURG BARIATRIC",
-                   "440 W 114 SURG COLORECTAL",
-                   "440 W 114 SURG GENERAL",
-                   "440 W 114 SURG PLASTIC",
-                   "440 W 114 SURG VASC",
-                   "440 W 114TH ST RMTI LIVER DISEASE")
-total_rooms <- 58 # Including 51 exam + 1 isolation
-
+total_rooms <- 58 # Excludes 4 of 61 exam rooms occupied by Radiation Oncology on Lower Level 
 ```
 
 
 ```{r Space Committee Assessment Analysis, echo = FALSE, warning = FALSE, message = FALSE}
 
-total_rooms <- 14 # Including 51 exam + 1 isolation
-
 # Processed Util Data for Analysis ---------------------------------------------
 util_data <- util_data %>%
-  # mutate(exclude_visits = case_when(str_detect(PRC_NAME, visits_exclude) ~ "Exclude",
-  #                                   str_detect(VISIT_TYPE, visit_types_exclude) ~ "Exclude",
-  #                                   TRUE ~ "")) %>%
-  # filter(exclude_visits != "Exclude") %>%
-  # filter(DEPARTMENT %!in% depts_exclude) %>%
-  filter(DEPARTMENT %in% depts_include) %>%
-  filter(APPT_DATE_YEAR < as.Date("2023-11-01")) %>%
+  mutate(exclude_visits = case_when(str_detect(PRC_NAME, visits_exclude) ~ "Exclude",
+                                    str_detect(VISIT_TYPE, visit_types_exclude) ~ "Exclude",
+                                    TRUE ~ "")) %>%
+  filter(exclude_visits != "Exclude") %>%
+  filter(DEPARTMENT %!in% depts_exclude) %>%
+  filter(APPT_DATE_YEAR < as.Date("2024-01-01")) %>%
   mutate(APPT_MONTH = format(as.Date(APPT_DATE_YEAR), "%b"))
 
 
@@ -644,7 +532,7 @@ avg_visits_day <- util_data %>%
   filter(APPT_YEAR == 2023) %>%
   filter(APPT_DAY %!in% c("SAT","SUN")) %>%
   mutate(APPT_MONTH = month(APPT_DATE_YEAR)) %>%
-  filter(APPT_MONTH < 11) %>%
+  # filter(APPT_MONTH < 11) %>%
   group_by(APPT_YEAR, APPT_DATE_YEAR) %>%
   summarise(total = n()) %>%
   group_by(APPT_YEAR) %>%
@@ -655,7 +543,7 @@ avg_visits_dept <- util_data %>%
   filter(APPT_YEAR == 2023) %>%
   filter(APPT_DAY %!in% c("SAT","SUN")) %>%
   mutate(APPT_MONTH = month(APPT_DATE_YEAR)) %>%
-  filter(APPT_MONTH < 11) %>%
+  # filter(APPT_MONTH < 11) %>%
   group_by(DEPARTMENT_OLD, APPT_YEAR, APPT_MONTH_YEAR) %>%
   summarise(total = n()) %>%
   ungroup() %>%
