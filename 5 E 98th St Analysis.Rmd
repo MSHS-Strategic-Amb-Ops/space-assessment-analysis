@@ -1,0 +1,853 @@
+---
+output:
+  html_document:
+    toc: no
+    toc_depth: 6
+    toc_float:
+      collapsed: yes
+    fig_width: 7
+    fig_height: 6
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE, message = FALSE, warning = FALSE)
+```
+
+<style type="text/css">
+div.main-container {
+  max-width: 2000px;
+  margin-left: 0;
+  margin-right: auto;
+}
+</style>
+
+<style>
+.tocify {
+color: black;
+}
+<!-- } -->
+<!-- .tocify .tocify-header { -->
+<!--     position: fixed; -->
+<!--     <!-- top: 50px; --> -->
+<!--     left: 50px; -->
+<!--     width: 350px; -->
+<!--     <!-- border: solid 3px black; --> -->
+<!--     <!-- height: 200px; --> -->
+<!--  border: none; -->
+<!-- } -->
+.tocify .tocify-header .active {
+color: white;
+background: #d80b8c;
+font-weight: bold;
+}
+<!-- .tocify .tocify-item { -->
+<!-- background: white; -->
+<!-- color: black; -->
+<!--  border: none; -->
+<!-- } -->
+</style>
+
+
+<style>
+  .nav-pills>li>a:hover, .nav-pills>li>a:focus, .nav-pills>li.active>a,     .nav-pills>li.active>a:hover, .nav-pills>li.active>a:focus{
+     background-color: #212070;
+     }
+</style>
+
+<style>
+.container { width: 1800px; }
+h2 {
+  background-color: #dddedd;
+  color: black;
+  text-indent: 20px;
+  <!-- font-weight: bold; -->
+}
+h3 {
+  background-color: #f2f2f2;
+  color: black;
+  text-indent: 20px;
+  <!-- font-weight: bold; -->
+}
+h4 {
+  <!-- background-color: #dddedd; -->
+  <!-- color: black; -->
+  text-indent: 50px;
+  <!-- font-weight: bold; -->
+}
+</style>
+
+<style>
+.blackbox {
+  padding: 1em;
+  background: white;
+  color: black;
+  border: 2px solid #7f7f7f;
+  width: 100%;
+  position: center;
+  align: center;
+  margin: 0px auto;
+}
+.center {
+  text-align: left;
+  margin: 0px auto;
+}
+</style>
+
+
+<!-- ```{css toc-content, echo = FALSE} -->
+<!-- #TOC { -->
+<!--   right: 270px; -->
+<!--   margin: 20px 0px 25px 0px; -->
+<!-- } -->
+
+<!-- .main-container { -->
+<!--     margin-left: 200px; -->
+<!-- } -->
+<!-- ``` -->
+
+
+```{r Load Packages, echo = FALSE, warning = FALSE, message = FALSE}
+# # Load packages -----------------------------------------------------------------------------------
+suppressMessages({
+  memory.limit(size = 8000000)
+  library(readxl)
+  library(writexl)
+  library(plyr)
+  library(dplyr)
+  library(data.table)
+  library(zoo)
+  library(shiny)
+  library(shinydashboard)
+  library(shinydashboardPlus)
+  library(shinyWidgets)
+  library(htmlwidgets)
+  library(lubridate)
+  library(tcltk)
+  library(tidyverse)
+  library(plotly)
+  library(knitr)
+  library(kableExtra)
+  library(leaflet)
+  library(grid)
+  library(gridExtra)
+  library(eeptools)
+  library(ggQC)
+  library(zipcodeR)
+  library(utils)
+  library(scales)
+  library(chron)
+  library(bupaR)
+  library(shiny)
+  library(DT)
+  library(DiagrammeR)
+  library(shinyalert)
+  library(edeaR)
+  library(processmapR)
+  library(processmonitR)
+  library(processanimateR)
+  library(tidyr)
+  library(lubridate)
+  library(RColorBrewer)
+  library(DiagrammeR)
+  library(ggplot2)
+  library(leaflet)
+  library(readr)
+  library(highcharter)
+  library(ggforce) # for 'geom_arc_bar'
+  library(packcircles) # for packed circle graph
+  library(viridis)
+  library(ggiraph)
+  library(treemapify)
+  library(treemap)
+  library(broom)
+  library(extrafont)
+  library(tis) # for US holidays
+  library(vroom)
+  library(sjmisc)
+  library(tools)
+  library(here)
+  library(shinyBS)
+  library(shinyscreenshot)
+  library(fasttime)
+  library(shinycssloaders)
+  library(feather)
+  # library(zipcodeR)
+  library(formattable)
+  library(shinyjs)
+  library(janitor)
+  library(patchwork)
+  library(flexdashboard)
+  # library(tidyverse)
+  # library(viridis)
+  # library(hrbrthemes)
+  # library(plotly)
+  # install.packages("bsts")
+  library(bsts)
+  library(reactable)
+  # install.packages("reactablefmtr")
+  library(reactablefmtr)
+  library(svDialogs)
+  # library(openxlsx)
+  library(flextable)
+  library(officedown)
+  library(officer)
+  library(magrittr)
+  library(webshot) 
+  library(png)
+  library(ggh4x)
+  library(RODBC)
+  library(DBI)
+  library(odbc)
+  library(dbplyr)
+  library(pool)
+  library(emojifont)
+})
+
+```
+
+
+```{r Graph asthetics, echo = FALSE, warning = FALSE, message = FALSE}
+### Color Functions for Graphs ============================================================
+# Mount Sinai corporate colors "USE THIS TO ADD COLORS"
+MountSinai_colors <- c(
+  `dark purple`  = "#212070",
+  `dark pink`    = "#d80b8c",
+  `dark blue`    = "#00aeef",
+  `dark grey`    = "#7f7f7f",
+  `yellow`       = "#ffc000",
+  `purple`       = "#7030a0",
+  `med purple`   = "#5753d0",
+  `med pink`     = "#f75dbe",
+  `med blue`     = "#5cd3ff",
+  `med grey`     = "#a5a7a5",
+  `light purple` = "#c7c6ef",
+  `light pink`   = "#fcc9e9",
+  `light blue`   = "#c9f0ff",
+  `light grey`   = "#dddedd"
+  )
+# Function to extract Mount Sinai colors as hex codes
+# Use Character names of MountSinai_colors
+MountSinai_cols <- function(...) {
+  cols <- c(...)
+  
+  if (is.null(cols))
+    return (MountSinai_colors)
+  
+  MountSinai_colors[cols]
+}
+# Color Function that can be used to call all colors is "MountSinai_cols()"
+# Use in ggplot 
+  #MountSinai_cols()       # will provide all colors and their hex codes in a table 
+  #MountSinai_cols("pink") # will provide color name and the hex code for the pink color
+# Create palettes 
+MountSinai_palettes <- list(
+  `all`   = MountSinai_cols("dark purple","dark pink","dark blue","dark grey",
+                            "med purple","med pink","med blue","med grey", 
+                            "light purple","light pink","light blue","light grey"),
+  
+  `main`  = MountSinai_cols("dark purple","dark pink","dark blue","dark grey"),
+  
+  `purple`  = MountSinai_cols("dark purple","med purple","light purple"),
+  
+  `pink`  = MountSinai_cols("dark pink","med pink","light pink"),
+  
+  `blue`  = MountSinai_cols("dark blue", "med blue", "light blue"),
+  
+  `grey`  = MountSinai_cols("dark grey", "med grey", "light grey"),
+  
+  `purpleGrey` = MountSinai_cols("dark purple", "dark grey"),
+  
+  `pinkBlue` = MountSinai_cols("dark pink", "dark blue")
+  
+)
+# MountSinai_palettes
+# Return function to interpolate a Mount Sinai color palette
+# default value is the main palette, reverse = True will change the order
+MountSinai_pal <- function(palette = "all", reverse = FALSE, ...) {
+  pal <- MountSinai_palettes[[palette]]
+  
+  if (reverse) pal <- rev(pal)
+  
+  colorRampPalette(pal, ...)
+}
+# Scale Function for ggplot can be used instead of scale_color_manual
+scale_color_MountSinai <- function(palette = "all", discrete = TRUE, reverse = FALSE, ...) {
+  pal <- MountSinai_pal(palette = palette, reverse = reverse)
+  
+  if (discrete) {
+    discrete_scale("colour", paste0("MountSinai_", palette), palette = pal, ...)
+  } else {
+    scale_color_gradientn(colours = pal(256), ...)
+  }
+}
+# Scale Fill for ggplot insetead of scale_fill_manual 
+scale_fill_MountSinai <- function(palette = "all", discrete = TRUE, reverse = FALSE, ...) {
+  pal <- MountSinai_pal(palette = palette, reverse = reverse)
+  if (discrete) {
+    discrete_scale("fill", paste0("MountSinai_", palette), palette = pal, ...)
+  } else {
+    scale_fill_gradientn(colours = pal(256), ...)
+  }
+}
+# Use in ggplot 
+  # scale_color_MountSinai("main")
+```
+
+
+```{r Global Variables, echo = FALSE, warning = FALSE, message = FALSE}
+
+'%!in%' <- function(x,y)!('%in%'(x,y))
+
+```
+
+
+```{r Establish Connection, echo = FALSE, warning = FALSE, message = FALSE}
+
+# Connection to Oracle DB ------------------------------------------------------
+# conn1 <- dbPool(drv = odbc(), dsn = "OAO Cloud DB SoYoun", timeout = 30)
+
+conn1 <- dbConnect(odbc(), "OAO Cloud DB SoYoun", timeout = 30)
+conn2 <- dbConnect(odbc(), 
+                  "Clarity_prod", 
+                  uid = "kweons01" , 
+                  pwd = "kweons01123$")
+
+
+# Connection to Clarity Tables -------------------------------------------------
+slot_raw_tbl <- tbl(conn2, "Y_DM_BOOKED_FILLED_RATE")
+access_raw_tbl <- tbl(conn2, "MV_DM_PATIENT_ACCESS")
+availability_raw_tbl <- tbl(conn2, "V_AVAILABILITY")
+block_raw_tbl <- tbl(conn2, "AVAIL_BLOCK")
+block_name_tbl <- tbl(conn2, "ZC_APPT_BLOCK")
+orders_raw_tbl <- tbl(conn2, "ORDER_PROC")
+coverage_tbl <- tbl(conn2, "V_PAT_ENC_COVERAGE")
+encounters_tbl <- tbl(conn2, "PAT_ENC")
+myChart_tbl <- tbl(conn2, "V_MYC_MESG")
+inBasket_tbl <- tbl(conn2, "IB_MESSAGES")
+template_tbl <- tbl(conn2, "TEMPLATE")
+user_activity_hour_tbl <- tbl(conn2, "UAL_ACTIVITY_HOURS")
+user_login_activity_tbl <- tbl(conn2, "V_ACCESS_LOG")
+user_access_log_tbl <- tbl(conn2, "ACCESS_LOG")
+clarity_ser_tbl <- tbl(conn2, "CLARITY_SER") # Physician Titles
+workstation_tbl <- tbl(conn2, "CLARITY_LWS")
+
+# Connection to OAO Tables -----------------------------------------------------
+utilization_tbl <-  tbl(conn1, in_schema("VILLEA04", "UTILIZATION_VIEW"))
+
+
+# loc_name <- access_raw_tbl %>%
+#   group_by(LOC_NAME, DEPARTMENT_NAME) %>%
+#   summarise(total = n()) %>%
+#   collect()
+
+
+# user_activity_hour_raw <- user_activity_hour_tbl %>%
+#   head(10) %>%
+#   collect()
+
+# user_login_activity_raw <- user_login_activity_tbl %>%
+#   head(10) %>%
+#   collect()
+# 
+# user_access_log_raw <- user_access_log_tbl %>%
+#   head(10) %>%
+#   collect()
+# 
+# prov_directory <- clarity_ser_tbl %>%
+#   head(1000) %>%
+#   collect()
+# 
+# workstation_raw <- workstation_tbl %>%
+#   filter(WORKSTATION_ID %in% workstations) %>%
+#   collect()
+# 
+# access_raw <- access_raw_tbl %>%
+#   filter(DEPARTMENT_ID == 8001090) %>%
+#   filter(DERIVED_STATUS_DESC == "Arrived") %>%
+#   mutate(appt.year = year(APPT_DTTM),
+#          appt.month = month(APPT_DTTM)) %>%
+#   filter(appt.year == 2023) %>%
+#   collect()
+# 
+# utilization_raw <- utilization_tbl %>%
+#   filter(DEPARTMENT_ID == 8001090) %>%
+#   collect()
+
+# user_login_merged <- user_login_activity_tbl %>%
+#   filter(DEPARTMENT_ID == 8001090) %>%
+#   mutate(login_year = year(LOGIN_TIME),
+#          login_month = month(LOGIN_TIME)) %>%
+#   filter(login_year == 2023) %>%
+#   left_join(user_access_log_tbl %>%
+#               dplyr::select(ACCESS_TIME, USER_ID, WORKSTATION_ID),
+#             by = c("LOGIN_TIME" = "ACCESS_TIME",
+#                    "USER_ID" = "USER_ID")) %>%
+#   collect()
+# 
+#  
+# user_activity_hour <- user_activity_hour_tbl %>%
+#   left_join(access_raw_tbl %>%
+#               dplyr::select(PAT_ENC_CSN_ID, DEPARTMENT_ID, DEPARTMENT_NAME, PROV_NAME_WID),
+#             by = c("PAT_ENC_CSN_ID")) %>%
+#   filter(DEPARTMENT_ID == 8001090) %>%
+#   mutate(activity_year = year(ACTIVITY_HOUR_DTTM),
+#          activity_month = month(ACTIVITY_HOUR_DTTM)) %>%
+#   filter(activity_year == 2023) %>%
+#   collect()
+
+```
+
+
+
+```{r Report Variables, echo = FALSE, warning = FALSE, message = FALSE}
+
+day_order <- c("Mon","Tue","Wed","Thu","Fri","Sat","Sun")
+hour_order <- as.vector(seq(7,20))
+visit_capacity_order <- c(paste0("visit_capacity_",4:10))
+
+report_run_date <- Sys.Date()
+
+```
+
+
+```{r Space Committee Assessment, echo = FALSE, warning = FALSE, message = FALSE}
+# Resource Type Mapping --------------------------------------------------------
+resource_types <- clarity_ser_tbl %>%
+  dplyr::select(PROV_ID, PROV_NAME, PROV_TYPE, CLINICIAN_TITLE) %>%
+  collect()
+
+# Utilization Data Pull --------------------------------------------------------
+util_data <- utilization_tbl %>%
+  filter(UTIL_TYPE == "scheduled") %>%
+  filter(VISIT_METHOD == "IN PERSON") %>%
+  filter(DEPARTMENT %like% "1000 10TH%") %>%
+  collect()
+
+access_data <- access_raw_tbl %>%
+  filter(VISIT_METHOD == "IN PERSON") %>%
+  filter(DEPARTMENT_NAME %like% "1000 10TH%") %>%
+  dplyr::select(PAT_ENC_CSN_ID, VISIT_TYPE, PRC_NAME) %>%
+  mutate(PAT_ENC_CSN_ID = as.character(PAT_ENC_CSN_ID)) %>%
+  collect()
+
+
+util_data <- left_join(util_data, access_data)
+  
+
+depts <- util_data %>%
+  group_by(DEPARTMENT_OLD, VISIT_METHOD) %>%
+  summarise(total = n()) %>%
+  pivot_wider(names_from = VISIT_METHOD,
+              values_from = total,
+              values_fill = 0) %>%
+  mutate(specialty = "NA",
+         floor = "NA") 
+
+
+total_volume <- utilization_tbl %>%
+  filter(UTIL_TYPE == "scheduled") %>%
+  filter(DEPARTMENT %like% "1000 10TH%") %>%
+  mutate(APPT_MONTH = month(APPT_DATE_YEAR)) %>%
+  # filter(APPT_MONTH < 11) %>%
+  group_by(APPT_YEAR) %>%
+  summarise(total = n()) %>%
+  collect() 
+
+total_avg_visits_day <- utilization_tbl %>%
+  filter(UTIL_TYPE == "scheduled") %>%
+  filter(DEPARTMENT %like% "1000 10TH%") %>%
+  mutate(APPT_MONTH = month(APPT_DATE_YEAR)) %>%
+  # filter(APPT_MONTH < 11) %>%
+  group_by(APPT_YEAR, APPT_DATE_YEAR) %>%
+  summarise(total = n()) %>%
+  group_by(APPT_YEAR) %>%
+  summarise(avg_visits = mean(total)) %>%
+  collect()
+
+
+# Map Provider Type ------------------------------------------------------------
+util_data$prov_type <- resource_types$PROV_TYPE[match(util_data$PROV_ID, resource_types$PROV_ID)]
+
+
+# Identify visit types to exclude ----------------------------------------------
+visit_types <- util_data %>%
+  group_by(VISIT_TYPE, PRC_NAME) %>%
+  summarise(total = n()) 
+
+dept_visits_types <- util_data %>%
+  group_by(DEPARTMENT_OLD, VISIT_TYPE, PRC_NAME) %>%
+  summarise(total = n())
+  
+```
+
+
+```{r Space Committee Assessment Criteria, echo = FALSE, warning = FALSE, message = FALSE}
+####### Analysis Criteria ########
+# 1000 10th Ave -----------------------
+visits_exclude <- "VISUAL FIELD|FLUORESCEIN|LASER|INFUSION|TRANSFUSION|PORT FLUSH|PHLEBOTOMY|PUMP|FLUSH"
+visit_types_exclude <- "TREATMENT VISIT"
+depts_exclude <- c("1000 10TH FETAL EVAL CLINIC", # Uses separate Sono and NST Rooms
+                   "1000 10TH AVE CVI CARDIOLOGY ECHO", # Uses separate Testing, Nuclear Control, Injection, Camera, Lab Rooms
+                   "1000 10TH AVE CVI CARDIOLOGY HOLTER",
+                   "1000 10TH AVE CVI CARDIOLOGY NUCLEAR",
+                   "1000 10TH AVE CVI CARDIOLOGY VASCULAR",
+                   "MSW 1000 10TH AVE CARDIOLOGY CT",
+                   "1000 10TH AVE EP",
+                   "1000 10TH ECHO",
+                   "1000 10TH AVE WINSTON 9C ADDICTIONS EVALUATION",
+                   "1000 10TH AVE WINSTON 9C ADDICTIONS OUTPATIENT",
+                   "1000 10TH CITPD",
+                   "1000 10TH PFT LAB",
+                   "1000 10TH AVE PSYCHIATRY")
+total_rooms <- 58 # Excludes 4 of 61 exam rooms occupied by Radiation Oncology on Lower Level 
+```
+
+
+```{r Space Committee Assessment Analysis, echo = FALSE, warning = FALSE, message = FALSE}
+
+# Processed Util Data for Analysis ---------------------------------------------
+util_data <- util_data %>%
+  mutate(exclude_visits = case_when(str_detect(PRC_NAME, visits_exclude) ~ "Exclude",
+                                    str_detect(VISIT_TYPE, visit_types_exclude) ~ "Exclude",
+                                    TRUE ~ "")) %>%
+  filter(exclude_visits != "Exclude") %>%
+  filter(DEPARTMENT %!in% depts_exclude) %>%
+  filter(APPT_DATE_YEAR < as.Date("2024-01-01")) %>%
+  mutate(APPT_MONTH = format(as.Date(APPT_DATE_YEAR), "%b"))
+
+
+# List of departments filtered -------------------------------------------------
+depts_filtered <- util_data %>%
+  group_by(DEPARTMENT_OLD, VISIT_METHOD) %>%
+  summarise(total = n()) %>%
+  pivot_wider(names_from = VISIT_METHOD,
+              values_from = total,
+              values_fill = 0) %>%
+  mutate(specialty = "NA",
+         floor = "NA") 
+
+
+# Average In-PErson Encounters per Day -----------------------------------------
+avg_visits_day <- util_data %>%
+  filter(APPT_YEAR == 2023) %>%
+  filter(APPT_DAY %!in% c("SAT","SUN")) %>%
+  mutate(APPT_MONTH = month(APPT_DATE_YEAR)) %>%
+  # filter(APPT_MONTH < 11) %>%
+  group_by(APPT_YEAR, APPT_DATE_YEAR) %>%
+  summarise(total = n()) %>%
+  group_by(APPT_YEAR) %>%
+  summarise(avg_visits = mean(total)) 
+
+# Average In-PErson Encounters per Day by Department -----------------------------
+avg_visits_dept <- util_data %>%
+  filter(APPT_YEAR == 2023) %>%
+  filter(APPT_DAY %!in% c("SAT","SUN")) %>%
+  mutate(APPT_MONTH = month(APPT_DATE_YEAR)) %>%
+  # filter(APPT_MONTH < 11) %>%
+  group_by(DEPARTMENT_OLD, APPT_YEAR, APPT_MONTH_YEAR) %>%
+  summarise(total = n()) %>%
+  ungroup() %>%
+  group_by(APPT_MONTH_YEAR) %>%
+  mutate(percent_total = round(total/sum(total),2)) 
+
+# Average Utilization by Month ------------------------------------------------
+avg_usage_facility_month <- util_data %>%
+  filter(APPT_DAY %!in% c("SAT","SUN")) %>%
+  mutate(total_rooms = total_rooms) %>%
+  group_by(APPT_MONTH_YEAR) %>%
+  mutate(total_days = length(unique(APPT_DATE_YEAR)),
+         total_visits = length(unique(PAT_ENC_CSN_ID))) %>%
+  group_by(APPT_YEAR, APPT_MONTH_YEAR, APPT_MONTH, total_days, total_rooms, total_visits) %>%
+  summarise(total_min = sum(SUM)) %>%
+  mutate(avg_visits = round(total_visits/total_days/total_rooms,2),
+         avg_util = round(total_min/(total_days*total_rooms*8*60),2)*100) 
+
+# Average Utilization by Year ----------------------------------------------------
+avg_usage_facility_year <- util_data %>%
+  filter(APPT_DAY %!in% c("SAT","SUN")) %>%
+  mutate(total_rooms = total_rooms) %>%
+  group_by(APPT_YEAR) %>%
+  mutate(total_days = length(unique(APPT_DATE_YEAR)),
+         total_visits = length(unique(PAT_ENC_CSN_ID))) %>%
+  group_by(APPT_YEAR, total_days, total_visits) %>%
+  summarise(total_min = sum(SUM),
+            total_rooms = round(mean(unique(total_rooms)),1)) %>%
+  mutate(avg_visits = round(total_visits/total_days/total_rooms,2),
+         avg_util = round(total_min/(total_days*total_rooms*8*60),2)*100) %>%
+  mutate(APPT_MONTH_YEAR = ifelse(APPT_YEAR == 2022, "FY22 Baseline", "FY23 YTD"))
+
+
+# Utilization YOY Target -------------------------------------------------------
+baseline <- round(avg_usage_facility_year[avg_usage_facility_year$APPT_YEAR=="2022","avg_visits"],2)
+target <- round(avg_usage_facility_year[avg_usage_facility_year$APPT_YEAR=="2022","avg_visits"]*1.05,2)
+target_10 <- round(avg_usage_facility_year[avg_usage_facility_year$APPT_YEAR=="2022","avg_visits"]*1.1,2)
+
+avg_usage_facility <- bind_rows(avg_usage_facility_month, avg_usage_facility_year)
+
+
+# Utilization by Day of Week ---------------------------------------------------
+avg_visits_dow <- util_data %>%
+  filter(APPT_DAY %!in% c("SAT","SUN")) %>%
+  mutate(total_rooms = total_rooms) %>%
+  group_by(APPT_YEAR, APPT_DAY) %>%
+  mutate(total_days = length(unique(APPT_DATE_YEAR)),
+         total_visits = length(unique(PAT_ENC_CSN_ID))) %>%
+  group_by(APPT_YEAR, APPT_DAY, total_days, total_rooms, total_visits) %>%
+  summarise(total_min = sum(SUM)) %>%
+  mutate(avg_visits = round(total_visits/total_days/total_rooms,2),
+         avg_util = round(total_min/(total_days*total_rooms*8*60),2)*100) %>%
+   arrange(match(APPT_DAY, c("MON","TUE","WED","THU","FRI"))) %>%
+  arrange(APPT_YEAR)
+
+# Utilization by Hour ----------------------------------------------------------
+avg_visits_hour <- util_data %>%
+  filter(APPT_DAY %!in% c("SAT","SUN")) %>%
+  mutate(total_rooms = total_rooms) %>%
+  mutate(APPT_HOUR  = format(strptime(as.ITime(floor_date(APPT_DTTM, "hour")), "%H:%M:%S"),'%H:%M')) %>%
+  group_by(APPT_YEAR, APPT_DAY) %>%
+  mutate(total_days = length(unique(APPT_DATE_YEAR))) %>%
+  group_by(APPT_YEAR, APPT_DAY, APPT_HOUR, total_days, total_rooms) %>%
+  summarise(total_visits = length(unique(PAT_ENC_CSN_ID))) %>%
+  mutate(avg_visits = round(total_visits/total_days,2)) 
+
+
+# Graph Output -----------------------------------------------------------------
+# Room Usage Trend -------------------------------------------------------------
+highchart() %>%
+  hc_yAxis_multiples(
+    list(title = list(text = "Avg Visits/Room/Day"), lineWidth = 3
+         # plotLines = list(list(value = as.numeric(target), color = "red", width = 2, 
+         #                       dashStyle = "shortdash",
+         #                       label = list(text = "+5% from FY22", style = list(color = "red", fontWeight = "bold"))
+         #                       ),
+         #                  list(value = as.numeric(target_10), color = "orange", width = 2, 
+         #                       dashStyle = "shortdash",
+         #                       label = list(text = "+10% from FY22", style = list(color = "orange", fontWeight = "bold"))
+         #                       ))
+         ),
+    list(title = list(text = "% Room Utilization"), min = 0, max = 100, showLastLabel = FALSE, opposite = TRUE)
+  ) %>%
+  hc_xAxis(title = list(text = ""),
+           categories = avg_usage_facility_month$APPT_MONTH_YEAR,
+           type = "datetime",
+           labels = list(format = '{value:%m/%d}')
+           # dateTimeLabelFormats = list(month = '%Y-%m')
+           ) %>%
+  hc_add_series(name = "Avg Visits/Room/Day",
+                data = avg_usage_facility_month$avg_visits,
+                type = 'column',
+                color= "#a5a7a5",
+                dataLabels = list(enabled = TRUE, format='{point.y}')) %>%
+  hc_add_series(name = "% Room Utilization",
+                data = avg_usage_facility_month$avg_util,
+                type = "line", yAxis = 1,
+                color='#d80b8c',
+                lineColor='#d80b8c',
+                dataLabels = list(enabled = TRUE, format='{point.y}%')) %>%
+  hc_legend(align = "left", verticalAlign = "top", itemStyle = list(fontFamily ='Calibri',color ='black', fontSize = "14px")) %>%
+  hc_title(text = "Room Usage Trend", align = "left", style = list(fontWeight = 'bold', fontSize = "22px", fontFamily = "Calibri")) %>%
+  hc_subtitle(text = paste0("FY22 Baseline = ", as.numeric(baseline)," visits/room/day"
+                            ),
+  align = "left", style = list(color = "red", fontWeight = "bold", fontFace = "italic", fontSize = "16px", fontFamily = "Calibri")) %>%
+  hc_tooltip(shared = TRUE, borderColor = "black")
+  
+
+# Turns per Room Trend ---------------------------------------------------------
+highchart() %>%
+  hc_add_series(type = "line", data = avg_usage_facility_month, hcaes(x = APPT_MONTH, y = avg_visits, group = APPT_YEAR), 
+                dataLabels = list(
+                  enabled = TRUE)) %>%
+  hc_xAxis(title = list(text = ""),
+           categories = avg_usage_facility_month$APPT_MONTH
+           # type = "datetime",
+           # labels = list(format = '{value:%m/%d}')
+           # dateTimeLabelFormats = list(month = '%Y-%m')
+           ) %>%
+  hc_yAxis(title = list(text = "Avg Visits/Room/Day"), 
+           min = 0, lineWidth = 3,
+           datalabels = list(enabled = TRUE, format = "{point.avg_visits}")
+           # plotLines = list(list(value = as.numeric(target), color = "red", width = 2, 
+           #                       dashStyle = "shortdash"
+           #                       # label = list(text = "Visits/Room/Day Target (+5%)", style = list(color = "red", fontWeight = "bold"))
+           #                     ))
+           ) %>%
+  hc_colors(c("#d80b8c","#a5a7a5")) %>%
+  hc_legend(align = "left", verticalAlign = "top", itemStyle = list(fontFamily ='Calibri',color ='black', fontSize = "14px")) %>%
+  hc_title(text = "Room Usage Trend", align = "left", style = list(fontWeight = 'bold', fontSize = "22px", fontFamily = "Calibri")) %>%
+  hc_subtitle(text = paste0("FY22 Baseline = ", as.numeric(baseline)," visits/room/day"
+                            ),
+  align = "left", style = list(color = "red", fontWeight = "bold", fontFace = "italic", fontSize = "16px", fontFamily = "Calibri")) %>%
+  hc_tooltip(shared = TRUE, borderColor = "black")
+
+
+# Room Occupancy Trend ---------------------------------------------------------  
+highchart() %>%
+  hc_add_series(type = "line", data = avg_usage_facility_month, hcaes(x = APPT_MONTH, y = avg_util, group = APPT_YEAR), 
+                dataLabels = list(
+                  enabled = TRUE,
+                  format = "{point.avg_util}%")) %>%
+  hc_xAxis(title = list(text = ""),
+           categories = avg_usage_facility_month$APPT_MONTH
+           # type = "datetime",
+           # labels = list(format = '{value:%m/%d}')
+           # dateTimeLabelFormats = list(month = '%Y-%m')
+           ) %>%
+  hc_yAxis(title = list(text = "Avg % Utilization"), 
+           min = 0, max = 100, lineWidth = 3,
+           datalabels = list(enabled = TRUE, format = "{point.avg_util}%"),
+           plotLines = list(list(value = 85, color = "red", width = 2, 
+                                 dashStyle = "shortdash"
+                                 # label = list(text = "Visits/Room/Day Target (+5%)", style = list(color = "red", fontWeight = "bold"))
+                               ))) %>%
+  hc_colors(c("#d80b8c","#a5a7a5")) %>%
+  hc_legend(align = "left", verticalAlign = "top", itemStyle = list(fontFamily ='Calibri',color ='black', fontSize = "14px")) %>%
+  hc_title(text = "Room Usage Trend", align = "left", style = list(fontWeight = 'bold', fontSize = "22px", fontFamily = "Calibri")) %>%
+  hc_subtitle(text = paste0("Avg Room Utilization Target = 85%"),
+              align = "left", style = list(color = "red", fontWeight = "bold", fontFace = "italic", fontSize = "16px", fontFamily = "Calibri")) %>%
+  hc_tooltip(shared = TRUE, borderColor = "black")
+
+
+# Visits/Room/Day YOY vs. Target --------------------------------------------  
+highchart() %>%
+  hc_yAxis(
+    title = list(text = "Avg Visits/Room/Day"), 
+    lineWidth = 3,
+plotLines = list(list(value = as.numeric(target), color = "red", width = 2,
+                      dashStyle = "shortdash",
+                      label = list(text = "+5% from FY22", style = list(color = "red", fontWeight = "bold"))
+                      )
+                 # list(value = as.numeric(target_10), color = "orange", width = 2,
+                 #      dashStyle = "shortdash",
+                 #      label = list(text = "+10% from FY22", style = list(color = "orange", fontWeight = "bold"))
+                 #      )
+                 )
+  ) %>%
+  hc_xAxis(title = list(text = ""),
+           categories = avg_usage_facility_year$APPT_MONTH_YEAR,
+           type = "datetime",
+           labels = list(format = '{value:%m/%d}')
+           # dateTimeLabelFormats = list(month = '%Y-%m')
+           ) %>%
+  hc_add_series(name = "Avg Visits/Room/Day",
+                data = avg_usage_facility_year$avg_visits,
+                type = 'column',
+                color= "#a5a7a5",
+                dataLabels = list(enabled = TRUE, format='{point.y}')) %>%
+  hc_legend(align = "left", verticalAlign = "top", itemStyle = list(fontFamily ='Calibri',color ='black', fontSize = "14px")) %>%
+  hc_title(text = "Visits/Room/Day YOY vs. Target", align = "left", style = list(fontWeight = 'bold', fontSize = "22px", fontFamily = "Calibri")) %>%
+  hc_subtitle(text = paste0("+5% from FY22 Baseline = ", as.numeric(target)),
+              align = "left", style = list(color = "red", fontWeight = "bold", fontFace = "italic", fontSize = "16px", fontFamily = "Calibri")) %>%
+  hc_tooltip(shared = TRUE, borderColor = "black")
+  
+
+
+# % Room Utilization YOY vs. Target --------------------------------------------  
+highchart() %>%
+  hc_yAxis(
+    title = list(text = "% Room Utilization"), 
+    min = 0, max = 100, 
+    showLastLabel = FALSE,
+    plotLines = list(list(value = 85, color = "red", width = 2,
+                          dashStyle = "shortdash",
+                          label = list(text = "Target", style = list(color = "red", fontWeight = "bold"))
+                          ))
+  ) %>%
+  hc_xAxis(title = list(text = ""),
+           categories = avg_usage_facility_year$APPT_MONTH_YEAR,
+           type = "datetime",
+           labels = list(format = '{value:%m/%d}')
+           # dateTimeLabelFormats = list(month = '%Y-%m')
+           ) %>%
+  hc_add_series(name = "% Room Utilization",
+                data = avg_usage_facility_year$avg_util,
+                type = "line", 
+                color='#d80b8c',
+                lineColor='#d80b8c',
+                dataLabels = list(enabled = TRUE, format='{point.y}%'))  %>%
+  hc_legend(align = "left", verticalAlign = "top", itemStyle = list(fontFamily ='Calibri',color ='black', fontSize = "14px")) %>%
+  hc_title(text = "% Room Utilization YOY vs. Target", align = "left", style = list(fontWeight = 'bold', fontSize = "22px", fontFamily = "Calibri")) %>%
+  hc_subtitle(text = paste0("FY23 % Room Utilization: 85%"),
+              align = "left", style = list(color = "red", fontWeight = "bold", fontFace = "italic", fontSize = "16px", fontFamily = "Calibri")) %>%
+  hc_tooltip(shared = TRUE, borderColor = "black")
+
+
+
+# Visits/Room/Day by Day Of Week -----------------------------------------------
+highchart() %>%
+  hc_yAxis(
+    title = list(text = "Avg Visits/Room/Day"), 
+    lineWidth = 3,
+    plotLines = list(list(value = as.numeric(target), color = "red", width = 2,
+                      dashStyle = "shortdash", 
+                      label = list(text = "+5% from FY22", align = "right", style = list(color = "red", fontWeight = "bold"))
+                      )
+                 # list(value = as.numeric(target_10), color = "orange", width = 2,
+                 #      dashStyle = "shortdash",
+                 #      label = list(text = "+10% from FY22", style = list(color = "orange", fontWeight = "bold"))
+                 #      )
+                 )
+  ) %>%
+  hc_xAxis(title = list(text = ""),
+           categories = avg_visits_dow$APPT_DAY
+           ) %>%
+  hc_add_series(data = avg_visits_dow %>% filter(APPT_YEAR == 2022), type = 'column', hcaes(x = APPT_DAY, y = avg_visits, group = APPT_YEAR),
+                color='#a5a7a5',
+                lineColor='#a5a7a5',
+                dataLabels = list(enabled = TRUE)) %>% 
+  hc_add_series(data = avg_visits_dow %>% filter(APPT_YEAR == 2023), type = 'column', hcaes(x = APPT_DAY, y = avg_visits, group = APPT_YEAR),
+                color='#d80b8c',
+                lineColor='#d80b8c',
+                dataLabels = list(enabled = TRUE)) %>%
+  hc_legend(align = "left", verticalAlign = "top", itemStyle = list(fontFamily ='Calibri',color ='black', fontSize = "14px")) %>%
+  hc_title(text = "Avg Visits/Room/Day by Day of Week", align = "left", style = list(fontWeight = 'bold', fontSize = "22px", fontFamily = "Calibri")) %>%
+  hc_subtitle(text = paste0("FY22 Baseline = ", as.numeric(baseline)," visits/room/day"
+                            ),
+  align = "left", style = list(color = "red", fontWeight = "bold", fontFace = "italic", fontSize = "16px", fontFamily = "Calibri")) %>%
+  hc_tooltip(shared = TRUE, borderColor = "black")
+
+```
+
+
+```{r Provider Analysis, echo = FALSE, warning = FALSE, message = FALSE}
+
+# Visits/Room/Day by Provider --------------------------------------------------
+visits_provider <- util_data %>%
+  filter(APPT_DAY %!in% c("SAT","SUN")) %>%
+  mutate(APPT_MONTH = month(APPT_DATE_YEAR)) %>%
+  mutate(APPT_HOUR = format(strptime(as.ITime(floor_date(APPT_START, "hour")), "%H:%M:%S"),'%H:%M')) %>%
+  mutate(session = ifelse(APPT_HOUR<12, "AM","PM")) %>%
+  group_by(APPT_YEAR, APPT_MONTH, APPT_DATE_YEAR, APPT_DAY, session, CAMPUS_SPECIALTY, DEPARTMENT, PROVIDER, prov_type) %>%
+  summarise(total_visits = length(unique(PAT_ENC_CSN_ID)),
+            total_min = sum(SUM))
+
+
+require(openxlsx)
+write.xlsx(visits_provider, "1090 Amst Ave Urology Visits by Provider.xlsx")
+
+
+# Avg Visits/Room/Day by Month -------------------------------------------------
+avg_usage_dept <- util_data %>%
+  filter(APPT_DAY %!in% c("SAT","SUN")) %>%
+  mutate(APPT_HOUR = format(strptime(as.ITime(floor_date(APPT_START, "hour")), "%H:%M:%S"),'%H:%M')) %>%
+  mutate(session = ifelse(APPT_HOUR<12, "AM","PM")) %>%
+  group_by(APPT_YEAR, APPT_MONTH_YEAR, APPT_DATE_YEAR, APPT_DAY, session, DEPARTMENT, PROVIDER) %>%
+  summarise(total_visits = length(unique(PAT_ENC_CSN_ID)),
+            total_min = sum(SUM))
+
+
+write.xlsx(avg_usage_dept, "Room Usage Analysis_85TH_Aug23.xlsx")
+
+
+avg_usage_dept_session <- util_data %>%
+  filter(APPT_DAY %!in% c("SAT","SUN")) %>%
+  pivot_longer(H_07_00:H_20_00,
+               names_to = "hour",
+               values_to = "roomed_min") %>%
+  mutate(hour = as.numeric(substr(hour, start = 3, stop = 4))) %>%
+  mutate(session = ifelse(hour<12, "AM","PM")) %>%
+  dplyr::select(APPT_YEAR, APPT_MONTH_YEAR, APPT_DATE_YEAR, APPT_DAY, DEPARTMENT, PROVIDER, RESOURCES, hour, roomed_min) %>%
+  mutate(hour = as.character(hour)) %>%
+  group_by(APPT_YEAR, APPT_MONTH_YEAR, APPT_DATE_YEAR, APPT_DAY, DEPARTMENT, PROVIDER, RESOURCES, hour) %>%
+  summarise_if(is.numeric, sum, na.rm = TRUE)
+
+```
